@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy 24th Birthday Samar! ✨</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #0d0a14;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    #stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    /* Step Typography */
+    .huge-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      color: #ffb7c5;
+      text-shadow: 0 0 20px rgba(255, 183, 197, 0.6);
+      margin-bottom: 12px;
+      animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .name-text {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      color: #ffd700;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+      opacity: 0;
+      animation: fadeIn 1.2s ease 0.6s forwards;
+    }
+    .sub-text {
+      font-size: clamp(1.1rem, 4vw, 1.4rem);
+      color: #e0d0f5;
+      margin-top: 15px;
+      font-weight: 300;
+    }
+
+    /* Countdown Styles */
+    .countdown-num {
+      font-size: clamp(5rem, 20vw, 8rem);
+      font-weight: 600;
+      color: #e6c8ff;
+      text-shadow: 0 0 30px rgba(216, 180, 254, 0.5);
+      animation: countFade 1s ease forwards;
+    }
+
+    /* Interactive Tap Area / Cake */
+    .interactive-wrap {
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease;
+    }
+    .interactive-wrap:active {
+      transform: scale(0.98);
+    }
+
+    /* CSS Cake */
+    .cake-container {
+      position: relative;
+      width: 200px;
+      height: 140px;
+      margin-top: 50px;
+      display: flex;
+      justify-content: center;
+    }
+    .frosting {
+      position: absolute;
+      top: 0;
+      width: 190px;
+      height: 45px;
+      background: #fff5ea;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 2;
+    }
+    .cake-base {
+      position: absolute;
+      bottom: 0;
+      width: 180px;
+      height: 100px;
+      background: linear-gradient(to bottom, #d29054, #b46b32);
+      border-radius: 8px 8px 24px 24px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.1rem;
+      padding: 0 10px;
+    }
+
+    /* 24 Candles */
+    .candles-group {
+      position: absolute;
+      top: -45px;
+      display: flex;
+      gap: 18px;
+      z-index: 3;
+    }
+    .candle {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, #ffe066, #d4af37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+    }
+    .flame {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 18px;
+      background: radial-gradient(ellipse at bottom, #ffea78 0%, #ff6b35 80%);
+      border-radius: 50% 50% 35% 35%;
+      box-shadow: 0 0 15px #ffa600, 0 0 25px #ff4500;
+      animation: flicker 0.2s infinite alternate ease-in-out;
+      transition: opacity 0.5s ease;
+    }
+    .flame.out {
+      opacity: 0;
+    }
+    .smoke {
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      background: #aaa;
+      border-radius: 50%;
+      opacity: 0;
+    }
+    .smoke.rise {
+      animation: smokeRise 1.2s forwards ease-out;
+    }
+
+    /* Wish Scene Artwork */
+    .wish-art {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffe6f0 0%, #d8b4fe 70%, transparent 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+      box-shadow: 0 0 40px rgba(216, 180, 254, 0.4);
+    }
+
+    /* Cake Slice / Feeding Animation */
+    .cake-slice {
+      font-size: 5rem;
+      cursor: pointer;
+      display: inline-block;
+      transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .cake-slice.feed-me {
+      transform: scale(4.8) translateY(20px);
+    }
+
+    /* Action Instruction Pill */
+    .hint-pill {
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      animation: pulse 1.8s infinite;
+    }
+
+    /* Keyframes */
+    @keyframes countFade { 0% { opacity: 0; transform: scale(0.6); } 30% { opacity: 1; transform: scale(1.1); } 80% { opacity: 1; } 100% { opacity: 0; transform: scale(1.3); } }
+    @keyframes popIn { 0% { opacity: 0; transform: scale(0.4); } 100% { opacity: 1; transform: scale(1); } }
+    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes flicker { 0% { transform: translateX(-50%) rotate(-2deg) scale(0.95); } 100% { transform: translateX(-50%) rotate(2deg) scale(1.05); } }
+    @keyframes smokeRise {
+      0% { opacity: 0.8; transform: translate(-50%, 0) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -40px) scale(3); filter: blur(3px); }
+    }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <div id="stage"></div>
+
+  <script>
+    const stage = document.getElementById('stage');
+
+    // 1. Countdown Scene
+    function startCountdown() {
+      let count = 3;
+      stage.innerHTML = `<div class="countdown-num">${count}</div>`;
+
+      const interval = setInterval(() => {
+        count--;
+        if (count > 0) {
+          stage.innerHTML = `<div class="countdown-num">${count}</div>`;
+        } else {
+          clearInterval(interval);
+          setTimeout(revealBirthday, 600);
+        }
+      }, 1000);
+    }
+
+    // 2. Birthday Reveal + Confetti
+    function revealBirthday() {
+      confetti({ particleCount: 80, spread: 70, origin: { x: 0.1, y: 0.6 } });
+      confetti({ particleCount: 80, spread: 70, origin: { x: 0.9, y: 0.6 } });
+
+      stage.innerHTML = `
+        <div class="huge-text">HAPPY BIRTHDAY! 🎉</div>
+        <div class="name-text">Samar Fatima Aagha</div>
+        <div class="hint-pill" onclick="firstCakeScene()">Tap to see your cake 🍰</div>
+      `;
+    }
+
+    // 3. First Cake View
+    function firstCakeScene() {
+      stage.innerHTML = `
+        <div class="candles-group">
+          <div class="candle">2<div class="flame"></div></div>
+          <div class="candle">4<div class="flame"></div></div>
+        </div>
+        <div class="cake-container">
+          <div class="frosting"></div>
+          <div class="cake-base">Samar Fatima Aagha</div>
+        </div>
+        <div class="sub-text">24 looks beautiful on you ✨</div>
+        <div class="hint-pill" onclick="wishScene()">Next ✨</div>
+      `;
+    }
+
+    // 4. Make a Wish Scene
+    function wishScene() {
+      stage.innerHTML = `
+        <div class="sub-text" style="margin-bottom: 24px;">Close your eyes… make a wish. ✨</div>
+        <div class="wish-art">🧕🌸</div>
+        <div class="hint-pill" onclick="secondCakeScene()">I've made my wish 🤍</div>
+      `;
+    }
+
+    // 5. Blow Out Candles
+    function secondCakeScene() {
+      stage.innerHTML = `
+        <div class="interactive-wrap" onclick="blowCandles()">
+          <div class="candles-group">
+            <div class="candle">2<div class="flame" id="flame1"></div><div class="smoke" id="smoke1"></div></div>
+            <div class="candle">4<div class="flame" id="flame2"></div><div class="smoke" id="smoke2"></div></div>
+          </div>
+          <div class="cake-container">
+            <div class="frosting"></div>
+            <div class="cake-base">Samar Fatima Aagha</div>
+          </div>
+        </div>
+        <div class="sub-text" id="status-text">Now blow them out 🕯️</div>
+        <div class="hint-pill" id="action-hint" onclick="blowCandles()">Tap the candles to blow!</div>
+      `;
+    }
+
+    function blowCandles() {
+      const f1 = document.getElementById('flame1');
+      const f2 = document.getElementById('flame2');
+      if (!f1 || f1.classList.contains('out')) return;
+
+      f1.classList.add('out');
+      f2.classList.add('out');
+      document.getElementById('smoke1').classList.add('rise');
+      document.getElementById('smoke2').classList.add('rise');
+
+      document.getElementById('status-text').innerText = "All your wishes will come true ✨";
+      const hint = document.getElementById('action-hint');
+      hint.innerText = "Time to cut the cake 🍰";
+      hint.onclick = cuttingScene;
+    }
+
+    // 6. Cut Cake Scene
+    function cuttingScene() {
+      stage.innerHTML = `
+        <div class="sub-text">Okay… now cut the cake! 🍰</div>
+        <div style="font-size: 4rem; margin: 30px 0; cursor: pointer;" onclick="sliceCake()">🔪🎂</div>
+        <div class="hint-pill" onclick="sliceCake()">Tap the knife to slice!</div>
+      `;
+    }
+
+    function sliceCake() {
+      stage.innerHTML = `
+        <div class="sub-text">Slice ready! Tap it to take a bite:</div>
+        <div style="margin: 40px 0;">
+          <div class="cake-slice" id="slice" onclick="feedSlice()">🍰</div>
+        </div>
+        <div class="hint-pill" onclick="feedSlice()">Tap the slice 😋</div>
+      `;
+    }
+
+    // 7. Feeding / Final View
+    function feedSlice() {
+      const slice = document.getElementById('slice');
+      slice.classList.add('feed-me');
+      
+      confetti({ particleCount: 60, spread: 80, origin: { y: 0.5 } });
+
+      setTimeout(() => {
+        stage.innerHTML = `
+          <div class="huge-text" style="font-size: clamp(2rem, 6vw, 3.5rem);">Open wide, Samar Fatima Aagha… 🍰😋</div>
+          <div class="sub-text">Your bite is here! May your 24th year bring endless joy, success, and love. ✨</div>
+        `;
+      }, 1000);
+    }
+
+    // Launch
+    startCountdown();
+  </script>
+</body>
+</html>
